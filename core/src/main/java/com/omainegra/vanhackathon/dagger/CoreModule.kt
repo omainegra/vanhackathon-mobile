@@ -1,5 +1,6 @@
 package com.omainegra.vanhackathon.dagger
 
+import com.omainegra.vanhackathon.services.*
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -18,6 +19,18 @@ object CoreModule {
 
     @JvmStatic @Provides @Reusable @Computation
     fun provideComputationScheduler(): Scheduler = Schedulers.computation()
+
+    @JvmStatic @Provides @Reusable
+    fun providePreferences(@IO scheduler: Scheduler, keyValueStore: KeyValueStore): Preferences =
+            PreferencesImpl(keyValueStore, scheduler)
+
+    @JvmStatic @Provides @Reusable
+    fun provideNetwork(@IO scheduler: Scheduler, directories: Directories): Network =
+        NetworkImpl("http://api-vanhack-event-sp.azurewebsites.net/", scheduler, directories)
+
+    @JvmStatic @Provides @Reusable
+    fun provideSecurity(network: Network, preferences: Preferences): Security =
+            SecurityImpl(network, preferences)
 }
 
 @Qualifier @Retention(AnnotationRetention.RUNTIME)

@@ -38,8 +38,6 @@ class HomeViewController : UIViewController() {
         }
 
         tableView.refreshControl = refreshControl
-
-        viewModel.start()
         viewModel.storesLce()
             .subscribe {
                 when (it){
@@ -48,7 +46,6 @@ class HomeViewController : UIViewController() {
                     }
                     is Content -> {
                         tableView.dataSource = StoreTableViewDataSource(it.data)
-//                        tableView.setDelegate(CharacterDelegate(viewModel))
                         tableView.reloadData()
                         loadingView.stopAnimating()
                     }
@@ -60,6 +57,8 @@ class HomeViewController : UIViewController() {
 
             }
             .addTo(disposable)
+
+        viewModel.start()
     }
 
     override fun viewWillDisappear(p0: Boolean) {
@@ -75,11 +74,11 @@ class StoreTableViewDataSource(private val stores: List<Store>): UITableViewData
 
     override fun getCellForRow(tableView: UITableView, indexPath: NSIndexPath): UITableViewCell {
         val store = stores[indexPath.row]
-        val cell = tableView.dequeueReusableCell("storeViewCellIdentifier") as StoreViewCell
+        val cell = tableView.dequeueReusableCell("storeViewCellIdentifier")
 
-        cell.nameLabel.text = store.name
-        cell.descriptionLabel.text = store.address
-        UIImageViewExtensions.setImage(cell.backgroundImage, NSURL(store.imageUrl), UIImage.getImage("im_not_found"))
+        cell.textLabel.text = store.name
+        cell.detailTextLabel.text = store.address
+        UIImageViewExtensions.setImage(cell.imageView, NSURL(store.imageUrl), UIImage.getImage("im_not_found"))
 
         return cell
     }

@@ -1,0 +1,47 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'idea'
+
+idea {
+    module {
+        sourceDirs += file('build/generated/source/kapt/main')
+        generatedSourceDirs += file('build/generated/source/kapt/main')
+    }
+}
+
+dependencies {
+    // Kotlin
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+
+    // Core
+    api "org.slf4j:slf4j-api:${versions.slf4j}"
+    api "org.threeten:threetenbp:1.3.6:no-tzdb"
+
+    // Arrow
+    api "io.arrow-kt:arrow-core:${versions.arrow}"
+    api "io.arrow-kt:arrow-syntax:${versions.arrow}"
+    api "io.arrow-kt:arrow-typeclasses:${versions.arrow}"
+    api "io.arrow-kt:arrow-instances:${versions.arrow}"
+
+    // Dagger
+    api "com.google.dagger:dagger:${versions.dagger}"
+    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
+
+    // RX
+    api "io.reactivex.rxjava2:rxjava:2.1.9"
+    api "io.reactivex.rxjava2:rxkotlin:2.2.0"
+
+    // Http
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-scalars:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.9.1"
+    implementation "com.google.code.gson:gson:2.8.2"
+    implementation "com.github.salomonbrys.kotson:kotson:2.5.0"
+    implementation "commons-codec:commons-codec:1.11"
+
+    // Tests
+    testImplementation "io.kotlintest:kotlintest:2.0.7"
+}

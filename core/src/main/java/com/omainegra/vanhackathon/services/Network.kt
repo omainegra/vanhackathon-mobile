@@ -132,7 +132,7 @@ object JsonMapping {
         val id = it.json.get("id").asLong
         val name = it.json.get("name").asString
         val address = it.json.get("address").asString
-        val imageUrl = "https://picsum.photos/1280/720/?random&id=$id}"
+        val imageUrl = "https://picsum.photos/1280/720/?randomId=$id&random=true"
 
         Store(id, name, address, imageUrl)
     }

@@ -71,22 +71,15 @@ class HomeViewController : UIViewController() {
 
 class StoreTableViewDataSource(private val stores: List<Store>): UITableViewDataSourceAdapter() {
 
-    val log = LoggerFactory.getLogger(javaClass)
-
     override fun getNumberOfRowsInSection(tableView: UITableView, section: Long) = stores.count().toLong()
 
     override fun getCellForRow(tableView: UITableView, indexPath: NSIndexPath): UITableViewCell {
         val store = stores[indexPath.row]
-        val imageUrl: String = store.imageUrl
-
-        log.info("getCellForRow: $store")
-
         val cell = tableView.dequeueReusableCell("storeViewCellIdentifier") as StoreViewCell
+
         cell.nameLabel.text = store.name
         cell.descriptionLabel.text = store.address
-//        UIImageViewExtensions.setImage(cell.backgroundImage, NSURL("https://picsum.photos/1280/720/?image=${store.id}"), UIImage.getImage("im_not_found"))
         UIImageViewExtensions.setImage(cell.backgroundImage, NSURL(store.imageUrl), UIImage.getImage("im_not_found"))
-
 
         return cell
     }

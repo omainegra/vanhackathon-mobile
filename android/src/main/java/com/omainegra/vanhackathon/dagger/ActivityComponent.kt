@@ -7,6 +7,7 @@ import dagger.Subcomponent
 import com.omainegra.vanhackathon.AndroidApp
 import com.omainegra.vanhackathon.view.HomeActivity
 import com.omainegra.vanhackathon.view.RegisterActivity
+import com.omainegra.vanhackathon.view.SignInActivity
 import com.omainegra.vanhackathon.view.SplashActivity
 import org.slf4j.LoggerFactory
 import javax.inject.Scope
@@ -21,6 +22,7 @@ interface ActivityComponent {
     fun inject(activity: SplashActivity)
     fun inject(activity: RegisterActivity)
     fun inject(activity: HomeActivity)
+    fun inject(activity: SignInActivity)
 
     @Subcomponent.Builder
     interface Builder {

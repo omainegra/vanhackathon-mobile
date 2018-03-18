@@ -17,6 +17,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.slf4j.LoggerFactory
 import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -131,8 +132,9 @@ object JsonMapping {
         val id = it.json.get("id").asLong
         val name = it.json.get("name").asString
         val address = it.json.get("address").asString
+        val imageUrl = "https://picsum.photos/1280/720/?random&id=$id}"
 
-        Store(id, name, address)
+        Store(id, name, address, imageUrl)
     }
 
     val productDeserializer = jsonDeserializer {

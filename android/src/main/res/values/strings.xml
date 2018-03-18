@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">VanHackathon</string>
+    <string name="register_label_title">Please Sign Up to continue</string>
+    <string name="register_label_name">Name</string>
+    <string name="register_label_address">Address</string>
+    <string name="register_label_email">Email</string>
+    <string name="register_label_password">Password</string>
+    <string name="register_button_register">Register</string>
+    <string name="register_button_signin">Sign In</string>
+
+    <string name="signin_label_title">Please Sign In to continue</string>
+    <string name="signin_label_email">Email</string>
+    <string name="signin_label_password">Password</string>
+    <string name="signin_button_signin">Sign In</string>
+    <string name="signin_button_register">Register</string>
 </resources>

@@ -18,7 +18,7 @@ object AndroidModule {
 
     @JvmStatic @Provides
     fun provideSharedPreferences(application: AndroidApp): SharedPreferences =
-        application.getSharedPreferences("KantinaKeyValueStore", Context.MODE_PRIVATE)
+        application.getSharedPreferences("VanHackKeyValueStore", Context.MODE_PRIVATE)
 
     @JvmStatic @Provides
     fun provideKeyValueStore(sharedPreferences: SharedPreferences): KeyValueStore =

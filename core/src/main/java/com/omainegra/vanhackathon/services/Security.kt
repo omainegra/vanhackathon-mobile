@@ -38,8 +38,6 @@ class SecurityImpl(
     private val network: Network,
     private val preferences: Preferences) : Security {
 
-    private val log = LoggerFactory.getLogger(javaClass)
-
     override fun createCustomer(customer: NewCustomer): Observable<Either<Throwable, Unit>> =
         network.createCustomer(customer)
             .flatMap(::saveAccessToken)

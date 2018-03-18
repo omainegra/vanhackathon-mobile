@@ -20,6 +20,7 @@ class SplashActivity : AppCompatActivity(){
         viewModel.navigation()
             .subscribe {
                 val destination = when (it) {
+                    SplashNavigation.Register -> RegisterActivity.newIntent(this)
                     SplashNavigation.Home -> HomeActivity.newIntent(this)
                 }
 

@@ -88,28 +88,17 @@ interface CustomerApi {
     fun create(@Body customer: NewCustomer): Observable<String>
 
     @POST("api/v1/Customer")
-    fun authenticate(@Query("emailChanged") email: String, @Query("passwordChanged")  password: String): Observable<String>
+    fun authenticate(@Query("emailChanged") email: String, @Query("passwordChanged") password: String): Observable<String>
 }
 
 object JsonMapping {
 
-//    val customerSerializer = jsonSerializer<Customer> {
-//        jsonObject(
-//            "id" to it.src.id.toJson(),
-//            "nameChanged" to it.src.nameChanged.toJson(),
-//            "emailChanged" to it.src.nameChanged.toJson(),
-//            "passwordChanged" to it.src.passwordChanged.toJson(),
-//            "addressChanged" to it.src.addressChanged.toJson(),
-//            "creation" to
-//        )
-//    }
-
     val newCustomerSerializer = jsonSerializer<Customer> {
         jsonObject(
-                "nameChanged" to it.src.name.toJson(),
-                "emailChanged" to it.src.name.toJson(),
-                "passwordChanged" to it.src.password.toJson(),
-                "addressChanged" to it.src.address.toJson()
+            "name" to it.src.name.toJson(),
+            "address" to it.src.address.toJson(),
+            "email" to it.src.email.toJson(),
+            "password" to it.src.password.toJson()
         )
     }
 

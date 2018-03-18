@@ -1,8 +1,10 @@
 package com.omainegra.vanhackathon.view
 
 import com.omainegra.vanhackathon.services.Initializer
+import com.omainegra.vanhackathon.services.Preferences
 import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory
  */
 
 sealed class SplashNavigation : Navigation {
+    object Register : SplashNavigation()
     object Home : SplashNavigation()
 }
 
@@ -20,7 +23,8 @@ interface SplashViewModel : ViewModel<SplashNavigation>
 
 class SplashViewModelImpl(
     private val scheduler: Scheduler,
-    private val initializer: Initializer): SplashViewModel {
+    private val initializer: Initializer,
+    private val preferences: Preferences): SplashViewModel {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -31,7 +35,8 @@ class SplashViewModelImpl(
         log.info("SplashViewModelImpl started")
 
         initializer.initialize()
-            .map { SplashNavigation.Home }
+            .flatMap { preferences.getAccessToken() }
+            .map { it.fold({ SplashNavigation.Register }, { SplashNavigation.Home }) }
             .subscribe(navigationSubject::onNext)
             .addTo(disposable)
     }

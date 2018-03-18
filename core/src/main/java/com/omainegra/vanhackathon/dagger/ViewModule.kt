@@ -4,10 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import com.omainegra.vanhackathon.services.Initializer
-import com.omainegra.vanhackathon.view.HomeViewModel
-import com.omainegra.vanhackathon.view.HomeViewModelImpl
-import com.omainegra.vanhackathon.view.SplashViewModel
-import com.omainegra.vanhackathon.view.SplashViewModelImpl
+import com.omainegra.vanhackathon.services.Network
+import com.omainegra.vanhackathon.services.Preferences
+import com.omainegra.vanhackathon.services.Security
+import com.omainegra.vanhackathon.view.*
 import io.reactivex.Scheduler
 import javax.inject.Qualifier
 
@@ -18,12 +18,16 @@ import javax.inject.Qualifier
 @Module
 object ViewModule {
     @JvmStatic @Provides @Reusable
-    fun provideSplashViewModel(initializer: Initializer, @Main scheduler: Scheduler): SplashViewModel =
-            SplashViewModelImpl(scheduler, initializer)
+    fun provideSplashViewModel(initializer: Initializer, @Main scheduler: Scheduler, preferences: Preferences): SplashViewModel =
+        SplashViewModelImpl(scheduler, initializer, preferences)
+
+    @JvmStatic @Provides @Reusable
+    fun provideRegisterViewModel(@Main scheduler: Scheduler, security: Security): RegisterViewModel =
+        RegisterViewModelImpl(scheduler, security)
 
     @JvmStatic @Provides @Reusable
     fun provideHomeViewModel(@Main scheduler: Scheduler): HomeViewModel =
-            HomeViewModelImpl(scheduler)
+        HomeViewModelImpl(scheduler)
 }
 
 @Qualifier @Retention(AnnotationRetention.RUNTIME)

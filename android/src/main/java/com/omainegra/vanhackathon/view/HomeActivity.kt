@@ -24,6 +24,8 @@ class HomeActivity : AppCompatActivity(){
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         setSupportActionBar(binding.toolbar)
+
+        viewModel.start()
     }
 
     override fun onDestroy() {

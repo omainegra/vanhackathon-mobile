@@ -26,8 +26,8 @@ object ViewModule {
         RegisterViewModelImpl(scheduler, security)
 
     @JvmStatic @Provides @Reusable
-    fun provideHomeViewModel(@Main scheduler: Scheduler): HomeViewModel =
-        HomeViewModelImpl(scheduler)
+    fun provideHomeViewModel(@Main scheduler: Scheduler, network: Network): HomeViewModel =
+        HomeViewModelImpl(network, scheduler)
 }
 
 @Qualifier @Retention(AnnotationRetention.RUNTIME)

@@ -6,6 +6,8 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.recyclerview.extensions.ListAdapter
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -48,7 +50,7 @@ class HomeActivity : AppCompatActivity(){
                             binding.swipeRefreshLayout.isRefreshing = true
                         }
                         is Content -> {
-                            adapter.updateData(it.data)
+                            adapter.submitList(it.data)
                             binding.swipeRefreshLayout.isRefreshing = false
                         }
                         is Error -> {
@@ -77,24 +79,22 @@ class HomeActivity : AppCompatActivity(){
     }
 }
 
-class StoresAdapter : RecyclerView.Adapter<StoreViewHolder>() {
-
-    var data: List<Store> = emptyList()
-
-    fun updateData(data: List<Store>){
-        this.data = data
-        notifyDataSetChanged()
+class StoresAdapter : ListAdapter<Store, StoreViewHolder> (DIFF_CALLBACK) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoreViewHolder  {
+        val view = RowStoreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return StoreViewHolder(view)
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoreViewHolder =
-        StoreViewHolder(RowStoreBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-
-    override fun getItemCount(): Int = data.count()
 
     override fun onBindViewHolder(holder: StoreViewHolder, position: Int) {
-        holder.update(data[position])
+        holder.update(getItem(position))
     }
 
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Store>() {
+            override fun areItemsTheSame(old: Store, new: Store) = old.id == new.id
+            override fun areContentsTheSame(old: Store, new: Store) = old == new
+        }
+    }
 }
 
 class StoreViewHolder(private val binding: RowStoreBinding) : RecyclerView.ViewHolder(binding.root) {

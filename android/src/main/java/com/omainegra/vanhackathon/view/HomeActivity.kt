@@ -46,12 +46,12 @@ class HomeActivity : AppCompatActivity(){
                 .doOnNext(::println)
                 .subscribe {
                     when (it) {
-                        is Loading -> this.runOnUiThread {
+                        is Loading -> {
                             binding.swipeRefreshLayout.isRefreshing = true
                         }
                         is Content -> {
-                            adapter.submitList(it.data)
                             binding.swipeRefreshLayout.isRefreshing = false
+                            adapter.submitList(it.data)
                         }
                         is Error -> {
                             binding.swipeRefreshLayout.isRefreshing = false

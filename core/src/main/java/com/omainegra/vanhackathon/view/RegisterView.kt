@@ -13,6 +13,7 @@ import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.withLatestFrom
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit.MILLISECONDS
 /**
@@ -36,6 +37,7 @@ interface RegisterViewModel : ViewModel<RegisterNavigation> {
     fun addressErrors(): Observable<Option<String>>
     fun emailErrors(): Observable<Option<String>>
     fun passwordErrors(): Observable<Option<String>>
+    fun serverErrors(): Observable<String>
     fun registerButtonEnabled(): Observable<Boolean>
 }
 
@@ -57,6 +59,7 @@ class RegisterViewModelImpl(
     private val addressErrorSubject = BehaviorSubject.create<Option<String>>()
     private val emailErrorSubject = BehaviorSubject.create<Option<String>>()
     private val passwordErrorSubject = BehaviorSubject.create<Option<String>>()
+    private val serverErrorSubject = PublishSubject.create<String>()
     private val registerButtonEnabledSubject = BehaviorSubject.create<Boolean>()
 
     private val navigationSubject = BehaviorSubject.create<RegisterNavigation>()
@@ -127,13 +130,13 @@ class RegisterViewModelImpl(
             .switchMap(security::createCustomer)
             .doOnNext { registerButtonEnabledSubject.onNext(true) }
             .subscribe {
-                it.fold(
-                    { error -> log.error("Error Registering user", error) },
-                    {
+                it.fold({ error ->
+                        log.error("Error Registering user", error)
+                        serverErrorSubject.onNext(error.message)
+                    }, {
                         log.info("Register successful")
                         navigationSubject.onNext(RegisterNavigation.Home)
-                    }
-                )
+                    })
             }
             .addTo(disposable)
 
@@ -151,6 +154,7 @@ class RegisterViewModelImpl(
     override fun addressErrors(): Observable<Option<String>> = addressErrorSubject
     override fun emailErrors(): Observable<Option<String>> = emailErrorSubject
     override fun passwordErrors(): Observable<Option<String>> = passwordErrorSubject
+    override fun serverErrors(): Observable<String> = serverErrorSubject
 
     override fun navigation(): Observable<RegisterNavigation> = navigationSubject.observeOn(scheduler)
 

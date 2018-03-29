@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import com.jakewharton.rxbinding2.view.clicks
@@ -63,6 +64,12 @@ class RegisterActivity : AppCompatActivity(){
             .addTo(disposable)
 
         // ViewModel -> View notifications
+        viewModel.serverErrors()
+            .subscribe {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            }
+            .addTo(disposable)
+
         viewModel.navigation()
             .subscribe {
                 val destination = when (it) {

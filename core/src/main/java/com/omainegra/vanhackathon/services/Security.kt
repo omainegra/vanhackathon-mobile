@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.omainegra.vanhackathon.model.Customer
 import com.omainegra.vanhackathon.model.NewCustomer
+import com.omainegra.vanhackathon.model.ServerError
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import okhttp3.Cache
@@ -30,23 +31,23 @@ import java.util.concurrent.atomic.AtomicLong
  */
 
 interface Security {
-    fun createCustomer(customer: NewCustomer): Observable<Either<Throwable, Unit>>
-    fun authenticate(username: String, password: String): Observable<Either<Throwable, Unit>>
+    fun createCustomer(customer: NewCustomer): Observable<Either<ServerError, Unit>>
+    fun authenticate(username: String, password: String): Observable<Either<ServerError, Unit>>
 }
 
 class SecurityImpl(
     private val network: Network,
     private val preferences: Preferences) : Security {
 
-    override fun createCustomer(customer: NewCustomer): Observable<Either<Throwable, Unit>> =
+    override fun createCustomer(customer: NewCustomer): Observable<Either<ServerError, Unit>> =
         network.createCustomer(customer)
             .flatMap(::saveAccessToken)
 
-    override fun authenticate(username: String, password: String): Observable<Either<Throwable, Unit>> =
+    override fun authenticate(username: String, password: String): Observable<Either<ServerError, Unit>> =
         network.authenticate(username, password)
             .flatMap(::saveAccessToken)
 
-    private fun saveAccessToken(accessToken: Either<Throwable, String>): Observable<Either<Throwable, Unit>> {
+    private fun saveAccessToken(accessToken: Either<ServerError, String>): Observable<Either<ServerError, Unit>> {
         return accessToken.fold(
                 { Observable.just(it.left())},
                 { preferences.setAccessToken(it).map { Unit.right() } })

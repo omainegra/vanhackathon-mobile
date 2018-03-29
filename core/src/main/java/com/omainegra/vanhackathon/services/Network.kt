@@ -6,10 +6,7 @@ import arrow.syntax.either.right
 import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.omainegra.vanhackathon.model.Customer
-import com.omainegra.vanhackathon.model.NewCustomer
-import com.omainegra.vanhackathon.model.Product
-import com.omainegra.vanhackathon.model.Store
+import com.omainegra.vanhackathon.model.*
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import okhttp3.Cache
@@ -18,6 +15,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.slf4j.LoggerFactory
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -31,8 +29,8 @@ import java.util.concurrent.atomic.AtomicLong
  */
 
 interface Network {
-    fun createCustomer(customer: NewCustomer): Observable<Either<Throwable, String>>
-    fun authenticate(username: String, password: String): Observable<Either<Throwable, String>>
+    fun createCustomer(customer: NewCustomer): Observable<Either<ServerError, String>>
+    fun authenticate(username: String, password: String): Observable<Either<ServerError, String>>
 
     fun getStores(): Observable<Either<Throwable, List<Store>>>
     fun getProducts(store: Store): Observable<Either<Throwable, List<Product>>>
@@ -55,6 +53,7 @@ class NetworkImpl(
                 .registerTypeAdapter(JsonMapping.zonedDateTimeDeserializer)
                 .registerTypeAdapter(JsonMapping.storeDeserializer)
                 .registerTypeAdapter(JsonMapping.productDeserializer)
+                .registerTypeAdapter(JsonMapping.errorDeserializer)
                 .create()
 
         val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { log.info(it) })
@@ -76,16 +75,26 @@ class NetworkImpl(
         storeApi = retrofit.create(StoreApi::class.java)
     }
 
-    override fun createCustomer(customer: NewCustomer): Observable<Either<Throwable, String>> =
+    override fun createCustomer(customer: NewCustomer): Observable<Either<ServerError, String>> =
         customerApi.create(customer)
-            .map { it.right() as  Either<Throwable, String>}
-            .onErrorReturn { it.left() }
+            .map {
+                when {
+                    it.isSuccessful -> it.body()!!.right()
+                    it.code() == 400 -> gson.fromJson<ServerError>(it.errorBody()!!.string()).left()
+                    else -> ServerError("Network error. Try again later").left()
+                }
+            }
             .subscribeOn(scheduler)
 
-    override fun authenticate(username: String, password: String): Observable<Either<Throwable, String>> =
+    override fun authenticate(username: String, password: String): Observable<Either<ServerError, String>> =
         customerApi.authenticate(username, password)
-            .map { it.right() as  Either<Throwable, String>}
-            .onErrorReturn { it.left() }
+                .map {
+                    when {
+                        it.isSuccessful -> it.body()!!.right()
+                        it.code() == 400 -> gson.fromJson<ServerError>(it.errorBody()!!.string()).left()
+                        else -> ServerError("Network error. Try again later").left()
+                    }
+                }
             .subscribeOn(scheduler)
 
     override fun getStores(): Observable<Either<Throwable, List<Store>>> =
@@ -103,10 +112,10 @@ class NetworkImpl(
 
 interface CustomerApi {
     @POST("api/v1/Customer")
-    fun create(@Body customer: NewCustomer): Observable<String>
+    fun create(@Body customer: NewCustomer): Observable<Response<String>>
 
     @POST("api/v1/Customer")
-    fun authenticate(@Query("email") email: String, @Query("password") password: String): Observable<String>
+    fun authenticate(@Query("email") email: String, @Query("password") password: String): Observable<Response<String>>
 }
 
 interface StoreApi {
@@ -149,5 +158,9 @@ object JsonMapping {
 
     val zonedDateTimeDeserializer = jsonDeserializer {
         ZonedDateTime.parse(it.json.asString)
+    }
+
+    val errorDeserializer = jsonDeserializer {
+        ServerError(it.json.get("error").asString)
     }
 }

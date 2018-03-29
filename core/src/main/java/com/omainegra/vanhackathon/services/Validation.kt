@@ -15,7 +15,7 @@ fun validateLength(text: String, length: Int): Either<Exception, String> =
         else Either.Right(text)
 
 fun validateEmail(text: String): Either<Exception, String> =
-        if (!emailPattern.matches(text)) Either.Left(Exception("Invalid emailChanged addressChanged"))
+        if (!emailPattern.matches(text)) Either.Left(Exception("Invalid email"))
         else Either.Right(text)
 
 val emailPattern =

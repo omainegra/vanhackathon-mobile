@@ -27,6 +27,7 @@ class HomeViewModelImpl(
     private val network: Network,
     private val scheduler: Scheduler): HomeViewModel {
 
+    private var started = false
     private val log = LoggerFactory.getLogger(javaClass)
     private val disposable = CompositeDisposable()
 
@@ -34,7 +35,10 @@ class HomeViewModelImpl(
     private val pullToRefreshSubject = PublishSubject.create<Unit>()
 
     override fun start() {
+        if (started) return
+
         log.info("HomeViewModelImpl started")
+        started = true
 
         pullToRefreshSubject.startWith(Unit)
             .switchMap { network.getStores() }
